@@ -15,13 +15,8 @@ import torch.nn.functional as F
 import string
 from torch.autograd import Variable
 import sys
-
-
-"""###Load training vocab"""
-
 import pickle 
-with open('word_dictionary.pkl', 'rb') as f:
-    word_to_ix = pickle.load(f)
+
 
 def make_bow_vector(sentence, word_to_ix):
     # create a vector of zeros of vocab size = len(word_to_idx)
@@ -264,6 +259,24 @@ class Task5C(nn.Module):
         x = F.sigmoid(self.lin3(x))
         return F.softmax(self.lin4(x))
 
+"""##Task6"""
+
+class Task6(nn.Module):
+    def __init__(self, vocab_size):
+        super(Task6, self).__init__()
+        self.lin1 = nn.Linear(vocab_size, 30)
+        self.lin2 = nn.Linear(30, 20)
+        self.drop_layer = nn.Dropout(p=0.4)
+        self.lin3 = nn.Linear(20, 10)
+        self.lin4 = nn.Linear(10,2)
+
+    def forward(self, x):
+        x = F.relu(self.lin1(x))
+        x = F.relu(self.lin2(x))
+        x = self.drop_layer(x)
+        x = F.relu(self.lin3(x))
+        return F.softmax(self.lin4(x))
+		
 """##Task7"""
 
 class Task7A(nn.Module):
@@ -332,6 +345,15 @@ if __name__ == '__main__':
 		
 	model = sys.argv[1]
 	test_file = sys.argv[2]
+	
+	if 'Task6' in model:
+		with open('bigram_dictionary.pkl', 'rb') as f:
+			word_to_ix = pickle.load(f)
+	else:
+		with open('word_dictionary.pkl', 'rb') as f:
+			word_to_ix = pickle.load(f)
+	
+	
 	with open(test_file) as f:
 		text_reviews_test = f.readlines()
 
